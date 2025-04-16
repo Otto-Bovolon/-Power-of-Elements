@@ -16,17 +16,23 @@ public class MOVIMENTO : MonoBehaviour
     public float crouchHeight = 1f;
     public float crouchSpeed = 3f;
 
+    public bool secondJump = false;
+
     private Vector3 moveDirection = Vector3.zero;
     private float rotationX = 0;
     private CharacterController characterController;
 
     private bool canMove = true;
 
+    private Coletavel coletavel;
+    private Rigidbody rb;
+
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        coletavel = GetComponent<Coletavel>();
     }
 
     void Update()
@@ -40,13 +46,31 @@ public class MOVIMENTO : MonoBehaviour
         float movementDirectionY = moveDirection.y;
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
-        if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
+        if (characterController.isGrounded) 
+        { 
+            if (coletavel.hasJumpUpgrade)
+            {
+                secondJump = true;
+               
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space) && !characterController.isGrounded && secondJump.Equals(true))
         {
             moveDirection.y = jumpPower;
+            secondJump = false;
+            Debug.Log("Pulou DUPLO");
+        }
+
+        else if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
+        {
+            moveDirection.y = jumpPower;
+            Debug.Log("Pulou");
         }
         else
         {
             moveDirection.y = movementDirectionY;
+            
         }
 
         if (!characterController.isGrounded)
